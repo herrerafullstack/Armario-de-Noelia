@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+<script src="https://accounts.google.com/gsi/client"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5ecdf">
+  <title>Armario de Noelia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="authView" class="auth-view">
+    <div class="auth-card">
+      <div class="brand">Armario de Noelia</div>
+      <p class="muted">Acceso privado</p>
+      <form id="loginForm">
+        <label>Email<input id="loginEmail" type="email" required autocomplete="username"></label>
+        <label>Contraseña<input id="loginPassword" type="password" required autocomplete="current-password"></label>
+        <button class="primary" type="submit">Ingresar</button>
+      </form>
+      <button id="forgotBtn" class="link-btn">Recuperar contraseña</button>
+      <button id="registerBtn" class="link-btn">Crear cuenta de Noelia</button>
+      <div id="authMsg" class="message"></div>
+    </div>
+  </div>
+
+  <div id="appView" class="hidden">
+    <header class="topbar">
+      <div class="brand">Armario de Noelia</div>
+      <div class="top-actions">
+        <button id="adminBtn" class="secondary hidden">Administración</button>
+        <button id="settingsBtn" class="secondary">Modelo</button>
+        <button id="connectDriveBtn" class="secondary" type="button">Conectar Google Drive</button>
+        <button id="logoutBtn" class="secondary">Salir</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="model-column">
+        <div class="model-card">
+          <div class="model-stage" id="modelStage">
+            <img id="modelImage" src="assets/model.jpg" alt="Modelo">
+            <div id="layerCanvas" class="layers"></div>
+          </div>
+          <div class="model-actions">
+            <button id="resetOutfitBtn" class="secondary">Reiniciar</button>
+            <button id="saveOutfitBtn" class="primary">Guardar atuendo</button>
+          </div>
+          <div class="model-actions"><button id="downloadModelBtn" class="secondary" type="button">Descargar foto base</button><button id="settingsBtnModel" class="secondary" type="button">Cambiar foto base</button></div>
+          <div class="hint">La foto base es la imagen de referencia. La superposición de prendas es orientativa.</div>
+        </div>
+      </section>
+
+      <section class="wardrobe-column">
+        <section class="feature-card prompt-card" aria-labelledby="promptTitle">
+          <h2 id="promptTitle">Probar prendas con IA</h2>
+          <p class="muted">Elegí solo los elementos que quieras probar. Los campos vacíos no se incluirán en el prompt. Esta herramienta funciona en tu navegador y no llama a una IA.</p>
+          <form id="promptForm"><div class="prompt-fields">
+            <label>Gorro<input name="Gorro" placeholder="Ej. boina negra"></label><label>Lentes<input name="Lentes" placeholder="Ej. lentes negros de marco fino"></label><label>Collares<input name="Collares" placeholder="Ej. collar dorado delicado"></label><label>Aros<input name="Aros" placeholder="Ej. aros pequeños plateados"></label><label>Vestido<input name="Vestido" placeholder="Ej. vestido midi verde"></label><label>Torso<input name="Torso" placeholder="Ej. camisa blanca de lino"></label><label>Guantes<input name="Guantes" placeholder="Ej. guantes negros cortos"></label><label>Pantalones<input name="Pantalones" placeholder="Ej. jean azul recto"></label><label>Zapatos<input name="Zapatos" placeholder="Ej. zapatillas blancas"></label><label>Reloj<input name="Reloj" placeholder="Ej. reloj plateado"></label><label>Anillos<input name="Anillos" placeholder="Ej. anillos finos dorados"></label>
+          </div><button class="primary" type="submit">Generar Prompt para IA</button></form>
+          <div id="promptResult" class="hidden"><label for="promptText">Prompt generado</label><textarea id="promptText" rows="12" readonly></textarea><div class="model-actions"><button id="copyPromptBtn" class="primary" type="button">Copiar prompt</button><button id="anotherPromptBtn" class="secondary" type="button">Generar otro prompt</button></div><p id="promptMsg" class="message" role="status" aria-live="polite"></p></div>
+        </section>
+        <section class="feature-card"><h2>Guardar una imagen generada</h2><p class="muted">Después de generar una imagen en una herramienta externa, descargala y subila aquí para incorporarla al armario.</p><button id="newGarmentFromAI" class="primary" type="button">Incorporar imagen descargada</button></section>
+        <section class="feature-card"><h2>Google Drive personal</h2><p class="muted"><strong>Estado: no conectado.</strong> Esta versión no simula una conexión con Drive. Para habilitarla se necesita configurar OAuth en Google Cloud y autorizar el acceso de Noelia; no se guardan contraseñas ni tokens en el código.</p><p class="muted">Por ahora, las imágenes usan el almacenamiento configurado en Firebase. Si Storage exige facturación o permisos adicionales, la carga mostrará un error; no se puede garantizar que esté habilitado sin revisar el proyecto Firebase.</p></section>
+        <details class="feature-card help-card"><summary>Cómo utilizar tu armario</summary><ol><li><strong>Guardá tu foto base:</strong> desde “Modelo”, cargá una foto vertical de cuerpo entero y usá “Descargar foto base” para conservar una copia.</li><li><strong>Organizá tus prendas:</strong> usá “Agregar prenda”, escribí un nombre, elegí categoría y estado, y seleccioná la foto.</li><li><strong>Buscá y filtrá:</strong> usá las pestañas por categoría y el buscador.</li><li><strong>Armá atuendos:</strong> seleccioná prendas con “Usar”; “Reiniciar” limpia la selección y “Guardar atuendo” permite ponerle nombre y valoración.</li><li><strong>Registrá el uso:</strong> en “Atuendos guardados”, elegí “Registrar uso” para anotar fecha y nota.</li><li><strong>Probá ropa con IA externa:</strong> completá solo los campos deseados, generá y copiá el prompt. Adjuntá la foto base y las fotos de las prendas a la herramienta externa.</li><li><strong>Guardá el resultado:</strong> descargá la imagen final y elegí “Incorporar imagen descargada”. Asignale nombre y categoría.</li></ol><p class="muted">La herramienta externa puede modificar detalles aunque el prompt pida conservarlos. Revisá el resultado antes de guardarlo. Las imágenes en Firebase dependen de la configuración, reglas y cuotas del proyecto.</p></details>
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-tab="all">Todo</button>
+          <button class="tab" data-tab="torso">Torso</button>
+          <button class="tab" data-tab="legs">Piernas</button>
+          <button class="tab" data-tab="full">Cuerpo completo</button>
+          <button class="tab" data-tab="shoes">Zapatos</button>
+          <button class="tab" data-tab="hats">Gorros</button>
+          <button class="tab" data-tab="outfits">Atuendos guardados</button>
+        </div>
+
+        <div class="toolbar">
+          <input id="searchInput" type="search" placeholder="Buscar prenda...">
+          <button id="newGarmentBtn" class="primary">+ Agregar prenda</button>
+        </div>
+
+        <div id="garmentPanel" class="panel">
+          <div id="garmentGrid" class="grid"></div>
+        </div>
+
+        <div id="outfitPanel" class="panel hidden">
+          <div id="outfitGrid" class="grid"></div>
+        </div>
+
+        <div id="emptyState" class="empty hidden">
+          No hay elementos para mostrar.
+        </div>
+      </section>
+    </main>
+
+    <footer>by Juan Herrera Burkhardt</footer>
+  </div>
+
+  <dialog id="registerDialog">
+    <form id="registerForm" method="dialog" class="dialog-card">
+      <div class="dialog-head"><h2>Crear cuenta</h2><button type="button" class="close" data-close="registerDialog">×</button></div>
+      <p class="muted">Esta es la única cuenta de usuaria permitida: Noelia.</p>
+      <label>Email<input id="registerEmail" type="email" required autocomplete="email"></label>
+      <label>Contraseña<input id="registerPassword" type="password" minlength="6" required autocomplete="new-password"></label>
+      <label>Repetir contraseña<input id="registerPassword2" type="password" minlength="6" required autocomplete="new-password"></label>
+      <div id="registerMsg" class="message"></div>
+      <div class="dialog-actions"><button type="button" class="secondary" data-close="registerDialog">Cancelar</button><button class="primary" type="submit">Crear cuenta</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="garmentDialog">
+    <form id="garmentForm" method="dialog" class="dialog-card">
+      <div class="dialog-head"><h2>Nueva prenda</h2><button type="button" class="close" data-close="garmentDialog">×</button></div>
+      <label>Nombre<input id="garmentName" required maxlength="80" placeholder="Ej. Blazer beige"></label>
+      <label>Categoría
+        <select id="garmentCategory" required>
+          <option value="torso">Torso</option>
+          <option value="legs">Piernas</option>
+          <option value="full">Cuerpo completo</option>
+          <option value="shoes">Zapatos</option>
+          <option value="hats">Gorros</option>
+          <option value="accessories">Accesorios</option>
+          <option value="jewelry">Joyas</option>
+        </select>
+      </label>
+      <label>Estado
+        <select id="garmentStatus"><option value="tentative">Tentativa</option><option value="obtained">Obtenido</option></select>
+      </label>
+      <label>Foto de la prenda<input id="garmentFile" type="file" accept="image/*" required></label>
+      <p class="muted" id="garmentHelp">Podés subir una prenda o una imagen final generada externamente. No se ejecuta ninguna IA desde esta aplicación.</p>
+      <div class="message" id="garmentMsg"></div>
+      <div class="dialog-actions"><button type="button" class="secondary" data-close="garmentDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="outfitDialog">
+    <form id="outfitForm" method="dialog" class="dialog-card">
+      <div class="dialog-head"><h2>Guardar atuendo</h2><button type="button" class="close" data-close="outfitDialog">×</button></div>
+      <label>Nombre<input id="outfitName" required maxlength="80" placeholder="Ej. Cena viernes"></label>
+      <label>Valoración
+        <select id="outfitRating"><option value="0">Sin puntuar</option><option value="1">★☆☆☆☆</option><option value="2">★★☆☆☆</option><option value="3">★★★☆☆</option><option value="4">★★★★☆</option><option value="5">★★★★★</option></select>
+      </label>
+      <div class="dialog-actions"><button type="button" class="secondary" data-close="outfitDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="settingsDialog">
+    <form id="settingsForm" method="dialog" class="dialog-card">
+      <div class="dialog-head"><h2>Modelo</h2><button type="button" class="close" data-close="settingsDialog">×</button></div>
+      <label>Foto de cuerpo entero<input id="modelFile" type="file" accept="image/*"></label>
+      <p class="muted">Usá una foto vertical, cuerpo entero, con iluminación pareja. Se guarda en el almacenamiento configurado para tu cuenta.</p>
+      <button id="downloadModelFromSettings" class="secondary" type="button">Descargar foto base actual</button>
+      <div class="dialog-actions"><button type="button" class="secondary" data-close="settingsDialog">Cancelar</button><button class="primary" type="submit">Guardar</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="adminDialog">
+    <div class="dialog-card">
+      <div class="dialog-head"><h2>Administración</h2><button type="button" class="close" data-close="adminDialog">×</button></div>
+      <p class="muted">Solo visible para Juan. Noelia crea su propia cuenta desde la pantalla inicial. Esta aplicación admite exactamente dos cuentas: Juan (administrador) y Noelia (única usuaria).</p>
+      <div class="admin-tools">
+        <button id="adminRefreshBtn" class="secondary">Actualizar resumen</button>
+        <div id="adminSummary" class="admin-summary"></div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="useDialog">
+    <form id="useForm" method="dialog" class="dialog-card">
+      <div class="dialog-head"><h2>Registrar uso</h2><button type="button" class="close" data-close="useDialog">×</button></div>
+      <label>Fecha<input id="useDate" type="date" required></label>
+      <label>Nota<input id="useNote" maxlength="120" placeholder="Ej. Trabajo / cena"></label>
+      <input id="useOutfitId" type="hidden">
+      <div class="dialog-actions"><button type="button" class="secondary" data-close="useDialog">Cancelar</button><button class="primary" type="submit">Registrar</button></div>
+    </form>
+  </dialog>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
